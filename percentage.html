@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>logical operator</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+    <!-- pdf scripts -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.debug.js"></script>
+    <!-- end pdf scripts -->
+
+    <script src="pdf.js"></script>
+
+</head>
+
+<body>
+    <div class="row justify-content-center d-flex mt-8">
+        <div class="col-md-4 mt-6">
+            <h1 class="text-center mb-4"> Marks Evolution</h1>
+
+            <div class="form-outline mb-4" id="pdf">
+                <form class=" form-control" action="javascript:(0)" method="post">
+                    <input type="number" class="form-control mb-4" id="obt" placeholder="Enter Obtain marks">
+                    <input type="number" class="form-control mb-4" id="maths" placeholder="Maths marks">
+                    <input type="number" class="form-control mb-4" id="science" placeholder="Science Marks">
+                    <input type="number" class="form-control mb-4" id="english" placeholder="English Marks">
+                    <input type="number" class="form-control mb-4" id="computer" placeholder="Computer Science Marks">
+                    <p class="mb-4" id="result"> </p>
+                    <button class="btn btn-primary mb-4" onclick="evol()"> Calculate </button>
+                    <button class="btn btn-primary mb-4" onclick="generatePDF()"> Download </button>
+                    <!-- <a href="javascript:generatePDF()">Dowload PDF</a> -->
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        function evol() {
+            var e = parseInt(document.getElementById('obt').value);
+            var a = parseInt(document.getElementById('maths').value);
+            var b = parseInt(document.getElementById('science').value);
+            var c = parseInt(document.getElementById('english').value);
+            var d = parseInt(document.getElementById('computer').value);
+
+
+
+
+            if (a <= e && b <= e && c <= e && d <= e) {
+
+                var i = 4 * e;
+                var sum = a + b + c + d;
+
+                var n = 100 / i;
+                var p = n * sum;
+            } else {
+                window.alert("please enter right marks")
+            }
+
+
+
+
+            document.getElementById('result').innerHTML = 'Your Percentage is' + '   ' + p;
+
+
+        }
+
+        function generatePDF() {
+            var printableArea = document.getElementById('pdf');
+
+            html2canvas(printableArea, {
+                useCORS: true,
+                onrendered: function(canvas) {
+
+                    var pdf = new jsPDF('p', 'pt', 'letter');
+
+                    var pageHeight = 500;
+                    var pageWidth = 500;
+                    for (var i = 0; i <= printableArea.clientHeight / pageHeight; i++) {
+                        var srcImg = canvas;
+                        var sX = 0;
+                        var sY = pageHeight * i; // start 1 pageHeight down for every new page
+                        var sWidth = pageWidth;
+                        var sHeight = pageHeight;
+                        var dX = 0;
+                        var dY = 0;
+                        var dWidth = pageWidth;
+                        var dHeight = pageHeight;
+
+                        window.onePageCanvas = document.createElement("canvas");
+                        onePageCanvas.setAttribute('width', pageWidth);
+                        onePageCanvas.setAttribute('height', pageHeight);
+                        var ctx = onePageCanvas.getContext('2d');
+                        ctx.drawImage(srcImg, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
+
+                        var canvasDataURL = onePageCanvas.toDataURL("image/png", 1.0);
+                        var width = onePageCanvas.width;
+                        var height = onePageCanvas.clientHeight;
+
+                        if (i > 0) // if we're on anything other than the first page, add another page
+                            pdf.addPage(1000, 1000); // 8.5" x 11" in pts (inches*72)
+
+                        pdf.setPage(i + 1); // now we declare that we're working on that page
+                        pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width * .62), (height * .62)); // add content to the page
+
+                    }
+                    pdf.save('result.pdf');
+                }
+            });
+        }
+    </script>
+
+
+</body>
+
+</html>
